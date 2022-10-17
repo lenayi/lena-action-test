@@ -31,5 +31,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           branch: 'chores/bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}'
+      - name: Checkout chores/bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}
+        uses: actions/checkout@v3
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v4
+        with:
+          with: ${{ secrets.GITHUB_TOKEN }}
+          title: 'chore: bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}'
+          base: 'master'
+
+
+    
 
     
