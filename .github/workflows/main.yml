@@ -45,11 +45,11 @@ jobs:
         with: 
           message: 'chore: bump ${{github.event.inputs.target}} to ${{github.event.inputs.bumpTo}}'
       - name: Create PR
-        uses: peter-evans/create-pull-request@v4
+        uses: repo-sync/pull-request@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: 'chore: bump ${{github.event.inputs.target}} to ${{github.event.inputs.bumpTo}}'
-          base: master
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_title: 'chore: bump ${{github.event.inputs.target}} to ${{github.event.inputs.bumpTo}}'
+          destination_branch: master
 
 
 
