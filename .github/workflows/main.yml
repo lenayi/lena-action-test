@@ -51,7 +51,7 @@ jobs:
           pr_title: 'chore: bump ${{github.event.inputs.target}} to ${{github.event.inputs.bumpTo}}'
           source_branch: chores/bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}
           destination_branch: master
-
+          pr_assignee: ${{github.actor}}
 
 
     
