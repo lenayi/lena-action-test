@@ -33,6 +33,8 @@ jobs:
           branch: 'chores/bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}'
       - name: Checkout chores/bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}
         uses: actions/checkout@v3
+        with: 
+          repository: chores/bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}
       - name: Create test file
         uses: finnp/create-file-action@master
         env:
