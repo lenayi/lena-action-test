@@ -1,0 +1,35 @@
+name: Prod / Version Bump
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        type: string
+        description: "Check the version of master. (ex: 1.0.0)"
+        required: true
+      target:
+        type: choice
+        description: "Select a package to bump."
+        required: true
+        options:
+          - common
+          - auth
+          - ui
+          - emoji
+      bumpTo:
+        type: string
+        description: "Bump to. (ex: 1.0.0)"
+        required: true
+
+jobs:
+  create-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create a branch
+        uses: peterjgrainger/action-create-branch@v2.2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          branch: 'chores/bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}'
+
+    
