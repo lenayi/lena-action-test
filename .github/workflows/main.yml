@@ -33,6 +33,16 @@ jobs:
           branch: 'chores/bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}'
       - name: Checkout chores/bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}
         uses: actions/checkout@v3
+        
+      - name: Create test file
+        uses: finnp/create-file-action@master
+        env:
+          FILE_NAME: "dir/fileName.txt"
+          FILE_DATA: "file content"
+      - name: test add and commit
+        uses: EndBug/add-and-commit@v9
+        with: 
+          push: true
       - name: Create PR
         uses: peter-evans/create-pull-request@v4
         with:
