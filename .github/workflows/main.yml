@@ -48,8 +48,7 @@ jobs:
         uses: peter-evans/create-pull-request@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          title: 'chore: bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}'
-          base: 'master'
+          title: 'chore: bump ${{github.event.inputs.target}} to ${{github.event.inputs.bumpTo}}'
           branch: 'chores/bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}'
 
 
