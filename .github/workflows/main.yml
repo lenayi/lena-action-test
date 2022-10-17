@@ -50,6 +50,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: 'chore: bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}'
           base: 'master'
+          branch: 'chores/bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}'
+
 
 
     
