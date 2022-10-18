@@ -1,0 +1,23 @@
+{
+  "name": "testlena",
+  "version": "1.0.1",
+  "description": "짲자자즈으으으으나나나나나나",
+  "main": "index.js",
+  "scripts": {
+    "build": "gulp libVersionUpdate --gulpfile build-config/gulpfile.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lenayi/testlena.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lenayi/testlena/issues"
+  },
+  "homepage": "https://github.com/lenayi/testlena#readme",
+  "dependencies": {
+    "gulp": "^4.0.2",
+    "gulp-replace": "^1.1.3"
+  }
+}
