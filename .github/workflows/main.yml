@@ -51,6 +51,7 @@ jobs:
           ref: chores/bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}
       - name: Create test
         run:
+          npm i gulp@4.0.2
           gulp libVersionUpdate --gulpfile build-config/gulpfile.js --bumpTo=14.1.00000 --target=test
       - name: test add and commit
         uses: EndBug/add-and-commit@v9
