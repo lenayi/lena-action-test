@@ -49,11 +49,9 @@ jobs:
         uses: actions/checkout@v3
         with: 
           ref: chores/bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}
-      - name: Create test file
-        uses: finnp/create-file-action@master
-        env:
-          FILE_NAME: "./bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}.txt"
-          FILE_DATA: "file content"
+      - name: Create test
+        run:
+          gulp libVersionUpdate --gulpfile build-config/gulpfile.js --bumpTo=14.1.00000 --target=test
       - name: test add and commit
         uses: EndBug/add-and-commit@v9
         with: 
