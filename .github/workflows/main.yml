@@ -27,6 +27,11 @@ jobs:
     steps:
       - name: Checkout Master
         uses: actions/checkout@v2
+      - name: Use Node.js 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+          registry-url: 'https://npm.pkg.github.com'
       - name: gulp 설치
         run:
           npm i gulp@4.0.2
@@ -51,7 +56,6 @@ jobs:
           ref: chores/bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}
       - name: Create test
         run:
-          npm i gulp@4.0.2
           gulp libVersionUpdate --gulpfile build-config/gulpfile.js --bumpTo=14.1.00000 --target=test
         env:
           NODE_AUTH_TOKEN: ${{secrets.DEV_EXPRESS_REPO_AND_PACKAGE_TOKEN}}
