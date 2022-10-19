@@ -53,6 +53,8 @@ jobs:
         run:
           npm i gulp@4.0.2
           gulp libVersionUpdate --gulpfile build-config/gulpfile.js --bumpTo=14.1.00000 --target=test
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.DEV_EXPRESS_REPO_AND_PACKAGE_TOKEN}}
       - name: test add and commit
         uses: EndBug/add-and-commit@v9
         with: 
