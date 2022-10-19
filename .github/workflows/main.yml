@@ -27,6 +27,11 @@ jobs:
     steps:
       - name: Checkout Master
         uses: actions/checkout@v2
+      - name: gulp 설치
+        run:
+          npm i gulp@4.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Get App version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@main
