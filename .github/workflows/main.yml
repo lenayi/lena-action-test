@@ -25,32 +25,15 @@ jobs:
   create-branch:
     runs-on: ubuntu-latest
     steps:
-      # 현재 package.json의 버전 정보를 가져온다.
-      - name: Get package.json version
+      - name: Checkout Master
+        uses: actions/checkout@v2
+      - name: Get App version
         id: package-version
-        uses: stevenbenitez/get-package-version-action@v1
-
-      # release 대상 버전과 현재 package.json의 버전과 일치하는지 비교한다.
-      # Result exit 0 (success), exit 1 (failed)
-      - name: Check the entered version.
-        shell: bash
+        uses: martinbeentjes/npm-get-version-action@main
+      - name: Check App Version
         run: |
-          RELEASE="${{github.event.inputs.release}}"
-          VERSION="${{steps.package-version.outputs.version}}"
-          if [ "$RELEASE" == "$VERSION" ]
-            then
-              echo MATCHED RELEASE VERSION
-              echo "  > CURRENT PACKAGE.JSON VERSION - $VERSION"
-              echo "  > RELEASE VERSION - $RELEASE"
-              exit 0;
-            elif [ "$RELEASE" != "$VERSION" ]
-            then
-              echo NO MATCH CURRNET RELEASE VERSION
-              echo "  > CURRENT CURRENT PACKAGE.JSON - $VERSION"
-              echo "  > RELEASE VERSION - $RELEASE"
-              exit 1;
-            fi
-
+          VERSION="${{steps.package-version.outputs.current-version}}"
+          echo "$VERSION"
       - name: Create a branch
         uses: peterjgrainger/action-create-branch@v2.2.0
         env:
