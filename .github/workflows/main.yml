@@ -32,11 +32,6 @@ jobs:
         with:
           node-version: 14.x
           registry-url: 'https://npm.pkg.github.com'
-      - name: gulp 설치
-        run:
-          npm i gulp@4.0.2 -g
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Get App version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@main
