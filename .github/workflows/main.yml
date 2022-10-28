@@ -51,7 +51,7 @@ jobs:
           ref: chores/bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}
       - name: Create test
         run:
-          npm run test -- bumpTo=14.1.00000 -- target=test
+          npm run test1 -- --bumpTo=14.1.00000 --target=test
         env:
           NODE_AUTH_TOKEN: ${{secrets.DEV_EXPRESS_REPO_AND_PACKAGE_TOKEN}}
       - name: test add and commit
