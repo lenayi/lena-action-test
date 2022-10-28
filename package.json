@@ -8,6 +8,7 @@
   },
   "repository": {
     "type": "git",
+    "test": "gulp libVersionUpdate --gulpfile build-config/gulpfile.js",
     "url": "git+https://github.com/lenayi/testlena.git"
   },
   "author": "",
