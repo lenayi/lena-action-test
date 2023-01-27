@@ -22,7 +22,7 @@ on:
 jobs:
   deploy:
     name: Build "${{needs.check-branch.outputs.branch}}" branch to "app.swit.${{github.event.inputs.domain}}".
-    runs-on: [ self-hosted, Linux, X64 ]
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [ 14.x ]
