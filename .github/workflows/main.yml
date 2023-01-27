@@ -1,73 +1,107 @@
-name: Prod / Version Bump
+name: Dev / Deployment Builder (dev & express)
 
 on:
   workflow_dispatch:
     inputs:
-      release:
-        type: string
-        description: "Check the version of master. (ex: 1.0.0)"
-        required: true
-      target:
+      domain:
         type: choice
-        description: "Select a package to bump."
+        description: "Select a domain to deploy."
         required: true
         options:
-          - common
-          - auth
-          - ui
-          - emoji
-      bumpTo:
+          - dev
+          - express
+      branch:
         type: string
-        description: "Bump to. (ex: 1.0.0)"
-        required: true
+        description: "Other Branch(Optional)"
+        required: false
+      silent:
+        type: boolean
+        required: false
+        description: "Skip Logging"
 
 jobs:
-  create-branch:
+  check-branch:
     runs-on: ubuntu-latest
+    outputs:
+      branch: ${{steps.branch.outputs.branch}}
     steps:
-      - name: Checkout Master
+      - id: branch
+        shell: bash
+        run: |
+          BRANCH="${{github.event.inputs.branch}}"
+          DOMAIN="${{github.event.inputs.domain}}"
+
+          if [ "$BRANCH" == "" ] && [ "$DOMAIN" == "dev" ]
+            then
+              echo '::set-output name=branch::develop'
+            elif [ "$BRANCH" == "" ] && [ "$DOMAIN" == "express" ]
+            then
+              echo '::set-output name=branch::express'
+            elif [ "$BRANCH" != "" ]
+            then
+              echo '::set-output name=branch::${{github.event.inputs.branch}}'
+            fi
+
+  deploy:
+    name: Build "${{needs.check-branch.outputs.branch}}" branch to "app.swit.${{github.event.inputs.domain}}".
+    runs-on: [ self-hosted, Linux, X64 ]
+    needs: [ check-branch ]
+    strategy:
+      matrix:
+        node-version: [ 14.x ]
+    steps:
+      - name: Logging
+        if: github.event.inputs.silent == 'false'
+        uses: Swit-ChristianKim/swit-webhook@v2
+        with:
+          WEBHOOK_URL: https://hook.swit.io/chat/200526020618215sXn8/vJidb0UqfsHD2p6ereIm
+          MESSAGE: app / Start distribution. Build "${{needs.check-branch.outputs.branch}}" branch to "app.swit.${{github.event.inputs.domain}}". From ${{github.actor}}.
+      - name: Checkout
         uses: actions/checkout@v2
-      - name: Use Node.js 14.x
+        with:
+          ref: ${{needs.check-branch.outputs.branch}}
+      - name: Use Node.js ${{matrix.node-version}}
         uses: actions/setup-node@v1
         with:
-          node-version: 14.x
-          registry-url: 'https://npm.pkg.github.com'
-      - name: Get App version
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@main
-      - name: Check App Version
-        run: |
-          VERSION="${{steps.package-version.outputs.current-version}}"
-          echo "$VERSION"
-      - name: Create a branch
-        uses: peterjgrainger/action-create-branch@v2.2.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          branch: 'chores/bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}'
-      - name: Checkout chores/bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}
-        uses: actions/checkout@v3
-        with: 
-          ref: chores/bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}
-      - name: Create test
-        run:
-          npm run test1 -- --bumpTo=14.1.00000 --target=test
+          node-version: ${{matrix.node-version}}
+      - name: install npm 8
+        run: npm i -g npm@8 --registry=https://registry.npmjs.org
+      - name: Install Dependencies
+        run: npm ci
         env:
           NODE_AUTH_TOKEN: ${{secrets.DEV_EXPRESS_REPO_AND_PACKAGE_TOKEN}}
-      - name: test add and commit
-        uses: EndBug/add-and-commit@v9
-        with: 
-          message: 'chore: bump ${{github.event.inputs.target}} to ${{github.event.inputs.bumpTo}}'
-      - name: Create PR
-        uses: repo-sync/pull-request@v2
+      - name: Angular Build
+        run: npm run builder:build --configuration=${{github.event.inputs.domain}}
+      - name: Deploy App
+        env:
+          PRIVATE_TOKEN: ${{secrets.DEV_EXPRESS_REPO_AND_PACKAGE_TOKEN}}
+        run: |
+          echo source clone ...
+          echo https://${PRIVATE_TOKEN}@github.com/Tech-Switness/fe-deploy-development.git
+          git config --global user.email "noreplay@github.io"
+          git config --global user.name "${{github.actor}}"
+          git clone --single-branch --branch master https://${PRIVATE_TOKEN}@github.com/Tech-Switness/fe-deploy-development.git deploy-repo
+          rm -rf deploy-repo/${{github.event.inputs.domain}}/app/**
+          mkdir -p deploy-repo/${{github.event.inputs.domain}}/app
+          mv builds/dist-app-${{github.event.inputs.domain}}/** deploy-repo/${{github.event.inputs.domain}}/app/
+          cd deploy-repo
+          git add .
+          git commit -m "[ ${{github.event.inputs.domain}} / app ] deploy by ${{github.actor}} "
+          git push origin --set-upstream master
+  after-message:
+    if: github.event.inputs.silent == 'false'
+    runs-on: ubuntu-latest
+    needs: [ check-branch, deploy ]
+    steps:
+      - name: success message
+        uses: Swit-ChristianKim/swit-webhook@v2
+        if: (needs.deploy.result == 'success')
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_title: 'chore: bump ${{github.event.inputs.target}} to ${{github.event.inputs.bumpTo}}'
-          source_branch: chores/bump_${{github.event.inputs.target}}_to_${{github.event.inputs.bumpTo}}
-          destination_branch: master
-          pr_assignee: ${{github.actor}}
-
-
-    
-
-    
+          WEBHOOK_URL: https://hook.swit.io/chat/200526020618215sXn8/vJidb0UqfsHD2p6ereIm
+          MESSAGE: app / Done distribution. Build "${{needs.check-branch.outputs.branch}}" branch to "app.swit.${{github.event.inputs.domain}}". From ${{github.actor}}.
+      - name: fail message
+        uses: Swit-ChristianKim/swit-webhook@v2
+        if: (needs.deploy.result == 'failure')
+        with:
+          WEBHOOK_URL: https://hook.swit.io/chat/200526020618215sXn8/vJidb0UqfsHD2p6ereIm
+          MESSAGE: app / Failed to distribute. Build "${{needs.check-branch.outputs.branch}}" branch to "app.swit.${{github.event.inputs.domain}}". From ${{github.actor}}.
