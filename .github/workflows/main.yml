@@ -8,7 +8,7 @@ on:
         description: "Select a domain to deploy."
         required: true
         options:
-          - dev
+          - production
           - express
       branch:
         type: string
@@ -40,4 +40,4 @@ jobs:
       - name: Install Dependencies
         run: npm i
       - name: Angular Build
-        run: npm run build
+        run: npm run build --configuration=${{github.event.inputs.domain}}
