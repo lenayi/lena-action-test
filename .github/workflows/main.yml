@@ -30,7 +30,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${{needs.check-branch.outputs.branch}}
+          ref: master
       - name: Use Node.js ${{matrix.node-version}}
         uses: actions/setup-node@v1
         with:
@@ -38,24 +38,6 @@ jobs:
       - name: install npm 8
         run: npm i -g npm@8 --registry=https://registry.npmjs.org
       - name: Install Dependencies
-        run: npm ci
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.DEV_EXPRESS_REPO_AND_PACKAGE_TOKEN}}
+        run: npm i
       - name: Angular Build
-        run: npm run builder:build --configuration=${{github.event.inputs.domain}}
-      - name: Deploy App
-        env:
-          PRIVATE_TOKEN: ${{secrets.DEV_EXPRESS_REPO_AND_PACKAGE_TOKEN}}
-        run: |
-          echo source clone ...
-          echo https://${PRIVATE_TOKEN}@github.com/Tech-Switness/fe-deploy-development.git
-          git config --global user.email "noreplay@github.io"
-          git config --global user.name "${{github.actor}}"
-          git clone --single-branch --branch master https://${PRIVATE_TOKEN}@github.com/Tech-Switness/fe-deploy-development.git deploy-repo
-          rm -rf deploy-repo/${{github.event.inputs.domain}}/app/**
-          mkdir -p deploy-repo/${{github.event.inputs.domain}}/app
-          mv builds/dist-app-${{github.event.inputs.domain}}/** deploy-repo/${{github.event.inputs.domain}}/app/
-          cd deploy-repo
-          git add .
-          git commit -m "[ ${{github.event.inputs.domain}} / app ] deploy by ${{github.actor}} "
-          git push origin --set-upstream master
+        run: npm run build
