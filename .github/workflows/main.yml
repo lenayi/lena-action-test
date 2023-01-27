@@ -20,42 +20,13 @@ on:
         description: "Skip Logging"
 
 jobs:
-  check-branch:
-    runs-on: ubuntu-latest
-    outputs:
-      branch: ${{steps.branch.outputs.branch}}
-    steps:
-      - id: branch
-        shell: bash
-        run: |
-          BRANCH="${{github.event.inputs.branch}}"
-          DOMAIN="${{github.event.inputs.domain}}"
-
-          if [ "$BRANCH" == "" ] && [ "$DOMAIN" == "dev" ]
-            then
-              echo '::set-output name=branch::develop'
-            elif [ "$BRANCH" == "" ] && [ "$DOMAIN" == "express" ]
-            then
-              echo '::set-output name=branch::express'
-            elif [ "$BRANCH" != "" ]
-            then
-              echo '::set-output name=branch::${{github.event.inputs.branch}}'
-            fi
-
   deploy:
     name: Build "${{needs.check-branch.outputs.branch}}" branch to "app.swit.${{github.event.inputs.domain}}".
     runs-on: [ self-hosted, Linux, X64 ]
-    needs: [ check-branch ]
     strategy:
       matrix:
         node-version: [ 14.x ]
     steps:
-      - name: Logging
-        if: github.event.inputs.silent == 'false'
-        uses: Swit-ChristianKim/swit-webhook@v2
-        with:
-          WEBHOOK_URL: https://hook.swit.io/chat/200526020618215sXn8/vJidb0UqfsHD2p6ereIm
-          MESSAGE: app / Start distribution. Build "${{needs.check-branch.outputs.branch}}" branch to "app.swit.${{github.event.inputs.domain}}". From ${{github.actor}}.
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -88,20 +59,3 @@ jobs:
           git add .
           git commit -m "[ ${{github.event.inputs.domain}} / app ] deploy by ${{github.actor}} "
           git push origin --set-upstream master
-  after-message:
-    if: github.event.inputs.silent == 'false'
-    runs-on: ubuntu-latest
-    needs: [ check-branch, deploy ]
-    steps:
-      - name: success message
-        uses: Swit-ChristianKim/swit-webhook@v2
-        if: (needs.deploy.result == 'success')
-        with:
-          WEBHOOK_URL: https://hook.swit.io/chat/200526020618215sXn8/vJidb0UqfsHD2p6ereIm
-          MESSAGE: app / Done distribution. Build "${{needs.check-branch.outputs.branch}}" branch to "app.swit.${{github.event.inputs.domain}}". From ${{github.actor}}.
-      - name: fail message
-        uses: Swit-ChristianKim/swit-webhook@v2
-        if: (needs.deploy.result == 'failure')
-        with:
-          WEBHOOK_URL: https://hook.swit.io/chat/200526020618215sXn8/vJidb0UqfsHD2p6ereIm
-          MESSAGE: app / Failed to distribute. Build "${{needs.check-branch.outputs.branch}}" branch to "app.swit.${{github.event.inputs.domain}}". From ${{github.actor}}.
