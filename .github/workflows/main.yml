@@ -27,10 +27,10 @@ jobs:
       matrix:
         node-version: [ 14.x ]
     steps:
-      - name: Checkout
+      - name: Checkout "$(Date:yyyyMMdd)"
         uses: actions/checkout@v2
         with:
-          ref: _$(Date:yyyyMMdd)
+          ref: $(Date:yyyyMMdd)
       - name: Use Node.js ${{matrix.node-version}}
         uses: actions/setup-node@v1
         with:
