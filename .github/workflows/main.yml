@@ -1,43 +1,25 @@
-name: Dev / Deployment Builder (dev & express)
+name: Prod / 3. Publish release from latest version
 
 on:
   workflow_dispatch:
     inputs:
-      domain:
+      target:
         type: choice
-        description: "Select a domain to deploy."
+        description: "릴리즈 대상 선택"
         required: true
         options:
-          - production
-          - express
-      branch:
-        type: string
-        description: "Other Branch(Optional)"
-        required: false
-      silent:
-        type: boolean
-        required: false
-        description: "Skip Logging"
-
+          - all
+          - web only
 jobs:
-  deploy:
-    name: Build "${{needs.check-branch.outputs.branch}}" branch to "app.swit.${{github.event.inputs.domain}}".
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [ 14.x ]
+  publish:
+    name: test 
+    runs-on: [ self-hosted, X64, macOS ]
     steps:
-      - name: Checkout "$(Date:yyyyMMdd)"
-        uses: actions/checkout@v2
-        with:
-          ref: $(Date:yyyyMMdd)
-      - name: Use Node.js ${{matrix.node-version}}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{matrix.node-version}}
-      - name: install npm 8
-        run: npm i -g npm@8 --registry=https://registry.npmjs.org
-      - name: Install Dependencies
-        run: npm i
-      - name: Angular Build
-        run: npm run build --configuration=${{github.event.inputs.domain}}
+      - name: a1 test
+        if: github.event.inputs.check == 'all'
+        run: |
+          echo source clone ...
+      - name: a2 test
+        if: ${github.event.inputs.check == 'all'}
+        run: |
+          echo source clone ...
