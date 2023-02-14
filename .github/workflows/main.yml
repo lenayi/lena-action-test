@@ -13,7 +13,7 @@ on:
 jobs:
   publish:
     name: test 
-    runs-on: [ self-hosted, X64, macOS ]
+    runs-on: ubuntu-latest
     steps:
       - name: a1 test
         if: github.event.inputs.check == 'all'
