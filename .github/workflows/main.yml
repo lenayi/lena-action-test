@@ -16,10 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: a1 test
-        if: github.event.inputs.check == 'all'
+        if: github.event.inputs.target == 'all'
         run: |
           echo source clone ...
       - name: a2 test
-        if: ${{github.event.inputs.check == 'all'}}
+        if: ${{github.event.inputs.target == 'all'}}
         run: |
           echo source clone ...
