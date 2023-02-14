@@ -20,6 +20,6 @@ jobs:
         run: |
           echo source clone ...
       - name: a2 test
-        if: ${github.event.inputs.check == 'all'}
+        if: ${{github.event.inputs.check == 'all'}}
         run: |
           echo source clone ...
