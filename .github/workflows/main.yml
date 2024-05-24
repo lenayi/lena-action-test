@@ -15,6 +15,11 @@ jobs:
     name: test 
     runs-on: ubuntu-latest
     steps:
+      - name: Send Curl Request
+        run: |
+          curl -X POST -H "Content-type: application/json" \
+          --data '{"text":"Hello, World"}' \
+          "https://hook.swit.io/chat/240524042739561X6IOV/hkQuH7HE5R41aOmrawLR?organization_id=19090600325683321"
       - name: a1 test
         if: github.event.inputs.target == 'all'
         run: |
