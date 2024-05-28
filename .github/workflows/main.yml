@@ -10,7 +10,7 @@ on:
 jobs:
   action-test:
     name: test 
-    runs-on: [ self-hosted, ARM64, macOS ]
+    runs-on: ubuntu-latest
     steps:
       - name: Hello world action step
         id: test-action
