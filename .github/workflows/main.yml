@@ -1,30 +1,22 @@
-name: Prod / 3. Publish release from latest version
+name: action-test!!
 
 on:
-  workflow_dispatch:
-    inputs:
-      target:
-        type: choice
-        description: "릴리즈 대상 선택"
-        required: true
-        options:
-          - all
-          - web only
+  pull_request:
+    branches:
+      - '*'
+    types:
+      - opened
+      - edited
 jobs:
-  publish:
+  action-test:
     name: test 
     runs-on: ubuntu-latest
     steps:
-      - name: Send Curl Request
-        run: |
-          curl -X POST -H "Content-type: application/json" \
-          --data '{"text":"Hello, World"}' \
-          "https://hook.swit.io/chat/240524042739561X6IOV/hkQuH7HE5R41aOmrawLR?organization_id=19090600325683321"
-      - name: a1 test
-        if: github.event.inputs.target == 'all'
-        run: |
-          echo source clone ...
-      - name: a2 test
-        if: ${{github.event.inputs.target == 'all'}}
-        run: |
-          echo source clone ...
+      - name: Hello world action step
+        id: test-action
+        uses: swit-fe/swit-github-action@0.1
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: action!!
+        uses: ./src/actions/sendMessageToPrReviewers
+      
